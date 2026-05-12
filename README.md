@@ -10,6 +10,24 @@
 
 Bu proje, Kaggle'dan alınan **"Video Game Sales"** veri seti üzerinde kapsamlı bir **İş Zekası (BI) Dashboard** oluşturmayı amaçlamaktadır. 16.598 oyun kaydı; platform, tür, bölge ve yayıncı bazlı stratejik görselleştirmelerle analiz edilmektedir.
 
+## 🖼️ Proje Ekran Görüntüleri
+
+### 1. Performans Özeti ve Satış Trendleri
+KPI kartları, bölgesel satış trendleri ve dinamik filtreleme alanı.
+![Performans Özeti](performance.png)
+
+### 2. Tür ve Platform Karşılaştırması
+Satış dağılımlarının tür ve platform bazlı analitik görünümleri.
+![Tür ve Platform Analizi](performance2.png)
+
+### 3. Küresel Pazar Analizi
+Bölgesel pazar payları ve satış yoğunluğu ısı haritası.
+![Küresel Pazar Analizi](kuresel.png)
+
+### 4. Rekabet ve Marka Analizi
+Yayıncı performansları ve sektörel marka dağılımları.
+![Yayıncı Analizi](marka.jpg)
+
 ## 🗂️ Veri Seti
 
 - **Kaynak:** [Kaggle – Video Game Sales](https://www.kaggle.com/datasets/gregorut/videogamesales)
@@ -87,15 +105,6 @@ Bu proje, Kaggle'dan alınan **"Video Game Sales"** veri seti üzerinde kapsaml�
 └── README.md        # Bu dosya
 ```
 
-## 📸 Ekran Görüntüleri
-
-> Dashboard'un çalışan halini görmek için projeyi yerel sunucuda çalıştırın.
-
-## 📄 Lisans
-
-Bu proje eğitim amaçlıdır. Veri seti [Kaggle Video Game Sales](https://www.kaggle.com/datasets/gregorut/videogamesales) kaynağından alınmıştır.
-
-## 🙏 Teşekkürler
 
 - [Kaggle](https://www.kaggle.com/) — Veri seti
 - [Chart.js](https://www.chartjs.org/) — Grafik kütüphanesi
