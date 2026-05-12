@@ -1,0 +1,26 @@
+# ===== OS Generated =====
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ===== IDEs & Editors =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ===== Node (if ever used) =====
+node_modules/
+npm-debug.log*
+
+# ===== Environment Variables =====
+.env
+.env.local
+.env.production
+
+# ===== Gemini / AI Tooling =====
+.gemini/
+
+# ===== Logs =====
+*.log

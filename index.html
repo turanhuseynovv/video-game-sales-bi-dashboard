@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Game Sales — BI Dashboard</title>
+  <meta name="description" content="16,598 oyun satış verisinin iş zekası standartlarına uygun interaktif dashboard analizi. Platform, tür, bölge ve yayıncı bazlı stratejik görselleştirmeler.">
+  <meta name="keywords" content="video game sales, BI dashboard, business intelligence, data visualization, gaming analytics">
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+  <!-- Papa Parse -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <!-- Export Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Veri yükleniyor ve ETL uygulanıyor...</div>
+  </div>
+
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="header-icon">🎮</div>
+        <div class="sidebar-title">VG Sales BI</div>
+      </div>
+      <nav class="sidebar-nav" id="tabNav">
+        <button class="nav-btn active" data-tab="overview" id="tabOverview">📊 Performans Özeti</button>
+        <button class="nav-btn" data-tab="regional" id="tabRegional">🌍 Küresel Pazar Analizi</button>
+        <button class="nav-btn" data-tab="publisher" id="tabPublisher">🏢 Rekabet ve Marka Analizi</button>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="theme-btn" id="themeToggle" title="Temayı Değiştir">☀️ Tema Değiştir</button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-area">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-title">
+          <div class="header-title">Video Game Sales Dashboard</div>
+          <div class="header-subtitle">BI Executive Analytics · 16,598 Kayıt · 1980–2020</div>
+        </div>
+        <div class="filter-bar">
+          <span class="filter-label">Filtreler:</span>
+          <select class="filter-select" id="filterYear">
+            <option value="all">Tüm Yıllar</option>
+          </select>
+          <select class="filter-select" id="filterPlatform">
+            <option value="all">Tüm Platformlar</option>
+          </select>
+          <select class="filter-select" id="filterGenre">
+            <option value="all">Tüm Türler</option>
+          </select>
+          <select class="filter-select" id="filterPublisher">
+            <option value="all">Tüm Yayıncılar</option>
+          </select>
+          <button class="filter-reset" id="filterReset">✕ Sıfırla</button>
+        </div>
+      </header>
+
+      <!-- Content Wrapper -->
+      <main class="content-wrapper">
+
+    <!-- ==================== TAB 1: Executive Overview ==================== -->
+    <div class="tab-content active" id="contentOverview">
+
+      <!-- KPI Cards -->
+      <div class="kpi-grid" id="kpiGrid">
+        <div class="kpi-card" id="kpiGlobalSales">
+          <div class="kpi-label">Toplam Global Satış</div>
+          <div class="kpi-value" id="kpiGlobalValue">—</div>
+          <div class="kpi-trend neutral" id="kpiGlobalTrend">—</div>
+          <div class="kpi-sub" id="kpiGlobalSub"></div>
+        </div>
+        <div class="kpi-card" id="kpiTotalGames">
+          <div class="kpi-label">Toplam Oyun Sayısı</div>
+          <div class="kpi-value" id="kpiGamesValue">—</div>
+          <div class="kpi-trend neutral" id="kpiGamesTrend">—</div>
+          <div class="kpi-sub" id="kpiGamesSub"></div>
+        </div>
+        <div class="kpi-card" id="kpiTopPlatform">
+          <div class="kpi-label">En Çok Satan Platform</div>
+          <div class="kpi-value" id="kpiPlatformValue">—</div>
+          <div class="kpi-trend neutral" id="kpiPlatformTrend">—</div>
+          <div class="kpi-sub" id="kpiPlatformSub"></div>
+        </div>
+        <div class="kpi-card" id="kpiTopGenre">
+          <div class="kpi-label">En Popüler Tür</div>
+          <div class="kpi-value" id="kpiGenreValue">—</div>
+          <div class="kpi-trend neutral" id="kpiGenreTrend">—</div>
+          <div class="kpi-sub" id="kpiGenreSub"></div>
+        </div>
+        <div class="kpi-card" id="kpiAvgSales">
+          <div class="kpi-label">Ortalama Satış / Oyun</div>
+          <div class="kpi-value" id="kpiAvgValue">—</div>
+          <div class="kpi-trend neutral" id="kpiAvgTrend">—</div>
+          <div class="kpi-sub" id="kpiAvgSub"></div>
+        </div>
+      </div>
+
+      <!-- Insight Box -->
+      <div class="insight-box" id="insightOverview">
+        <div class="insight-header">
+          <span class="insight-icon">💡</span>
+          <span class="insight-title">Otomatik İçgörüler</span>
+        </div>
+        <ul class="insight-list" id="insightOverviewList">
+          <li>Veriler yükleniyor...</li>
+        </ul>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="charts-grid">
+        <div class="chart-card full-width">
+          <div class="chart-header">
+            <span class="chart-title">Yıllara Göre Satış Trendi (Bölgesel Kırılım)</span>
+            <span class="chart-badge">Çizgi Grafik</span>
+          </div>
+          <div class="region-legend">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--color-na)"></span> Kuzey Amerika</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--color-eu)"></span> Avrupa</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--color-jp)"></span> Japonya</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--color-other)"></span> Diğer</div>
+          </div>
+          <div class="chart-container trend-chart">
+            <canvas id="chartTrend"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-header">
+            <span class="chart-title">Türlere Göre Satış Dağılımı</span>
+            <span class="chart-badge">Çubuk Grafik</span>
+          </div>
+          <div class="chart-container bar-chart">
+            <canvas id="chartGenre"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <span class="chart-title">Platformlara Göre Karşılaştırma (Top 10)</span>
+            <span class="chart-badge">Çubuk Grafik</span>
+          </div>
+          <div class="chart-container bar-chart">
+            <canvas id="chartPlatform"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Games Table -->
+      <div class="table-card" id="topGamesTable">
+        <div class="table-header">
+          <span class="table-title">🏆 Top 20 En Çok Satan Oyunlar</span>
+          <div class="table-actions" style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" class="table-search" id="searchTopGames" placeholder="Oyun adı ara...">
+            <div class="export-dropdown">
+              <button class="export-btn">Dışa Aktar ▾</button>
+              <div class="export-menu">
+                <button onclick="exportData('topGames', 'csv')">CSV İndir</button>
+                <button onclick="exportData('topGames', 'excel')">Excel İndir</button>
+                <button onclick="exportData('topGames', 'pdf')">PDF İndir</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table" id="tableTopGames">
+            <thead>
+              <tr>
+                <th data-sort="Rank">Sıra <span class="sort-icon">▼</span></th>
+                <th data-sort="Name">Oyun Adı <span class="sort-icon">▼</span></th>
+                <th data-sort="Platform">Platform <span class="sort-icon">▼</span></th>
+                <th data-sort="Year">Yıl <span class="sort-icon">▼</span></th>
+                <th data-sort="Genre">Tür <span class="sort-icon">▼</span></th>
+                <th data-sort="Publisher">Yayıncı <span class="sort-icon">▼</span></th>
+                <th data-sort="Global_Sales">Global <span class="sort-icon">▼</span></th>
+                <th data-sort="NA_Sales">Kuzey Amerika <span class="sort-icon">▼</span></th>
+                <th data-sort="EU_Sales">Avrupa <span class="sort-icon">▼</span></th>
+                <th data-sort="JP_Sales">Japonya <span class="sort-icon">▼</span></th>
+              </tr>
+            </thead>
+            <tbody id="tbodyTopGames"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 2: Regional Analysis ==================== -->
+    <div class="tab-content" id="contentRegional">
+
+      <!-- Insight Box -->
+      <div class="insight-box" id="insightRegional">
+        <div class="insight-header">
+          <span class="insight-icon">💡</span>
+          <span class="insight-title">Bölgesel İçgörüler</span>
+        </div>
+        <ul class="insight-list" id="insightRegionalList">
+          <li>Veriler yükleniyor...</li>
+        </ul>
+      </div>
+
+      <div class="charts-grid three-col">
+        <div class="chart-card">
+          <div class="chart-header">
+            <span class="chart-title">Bölgesel Pazar Payı</span>
+            <span class="chart-badge">Donut Grafik</span>
+          </div>
+          <div class="chart-container donut-chart">
+            <canvas id="chartRegionDonut"></canvas>
+          </div>
+        </div>
+        <div class="chart-card" style="grid-column: span 2;">
+          <div class="chart-header">
+            <span class="chart-title">Yıllara Göre Bölgesel Satış Dağılımı</span>
+            <span class="chart-badge">Yığın Çubuk</span>
+          </div>
+          <div class="chart-container stacked-chart">
+            <canvas id="chartRegionStacked"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card" style="margin-top:var(--space-md)">
+        <div class="chart-header">
+          <span class="chart-title">Platform × Bölge Satış Isı Haritası (Top 12)</span>
+          <span class="chart-badge">Isı Haritası</span>
+        </div>
+        <div class="heatmap-container" id="heatmapContainer">
+          <!-- Generated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 3: Publisher Deep Dive ==================== -->
+    <div class="tab-content" id="contentPublisher">
+
+      <!-- Insight Box -->
+      <div class="insight-box" id="insightPublisher">
+        <div class="insight-header">
+          <span class="insight-icon">💡</span>
+          <span class="insight-title">Yayıncı İçgörüleri</span>
+        </div>
+        <ul class="insight-list" id="insightPublisherList">
+          <li>Veriler yükleniyor...</li>
+        </ul>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-header">
+            <span class="chart-title">Top 15 Yayıncı (Global Satış)</span>
+            <span class="chart-badge">Çubuk Grafik</span>
+          </div>
+          <div class="chart-container bar-chart">
+            <canvas id="chartPublisher"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <span class="chart-title">Yayıncı × Tür Dağılımı (Top 10)</span>
+            <span class="chart-badge">Ağaç Haritası</span>
+          </div>
+          <div class="chart-container treemap-chart" id="treemapContainer">
+            <!-- Generated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Full Detail Table -->
+      <div class="table-card" style="margin-top:var(--space-md)">
+        <div class="table-header">
+          <span class="table-title">📋 Detaylı Veri Tablosu</span>
+          <div class="table-actions" style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" class="table-search" id="searchDetail" placeholder="Oyun, yayıncı veya platform ara...">
+            <div class="export-dropdown">
+              <button class="export-btn">Dışa Aktar ▾</button>
+              <div class="export-menu">
+                <button onclick="exportData('detail', 'csv')">CSV İndir</button>
+                <button onclick="exportData('detail', 'excel')">Excel İndir</button>
+                <button onclick="exportData('detail', 'pdf')">PDF İndir</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="table-wrapper" style="max-height: 450px; overflow-y: auto;">
+          <table class="data-table" id="tableDetail">
+            <thead>
+              <tr>
+                <th data-sort="Rank">Sıra <span class="sort-icon">▼</span></th>
+                <th data-sort="Name">Oyun Adı <span class="sort-icon">▼</span></th>
+                <th data-sort="Platform">Platform <span class="sort-icon">▼</span></th>
+                <th data-sort="Year">Yıl <span class="sort-icon">▼</span></th>
+                <th data-sort="Genre">Tür <span class="sort-icon">▼</span></th>
+                <th data-sort="Publisher">Yayıncı <span class="sort-icon">▼</span></th>
+                <th data-sort="Global_Sales">Global <span class="sort-icon">▼</span></th>
+                <th data-sort="NA_Sales">Kuzey Amerika <span class="sort-icon">▼</span></th>
+                <th data-sort="EU_Sales">Avrupa <span class="sort-icon">▼</span></th>
+                <th data-sort="JP_Sales">Japonya <span class="sort-icon">▼</span></th>
+                <th data-sort="Other_Sales">Diğer <span class="sort-icon">▼</span></th>
+              </tr>
+            </thead>
+            <tbody id="tbodyDetail"></tbody>
+          </table>
+        </div>
+        <div class="table-pagination" id="paginationDetail">
+          <span id="paginationInfo">—</span>
+          <div class="pagination-btns" id="paginationBtns"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="dashboard-footer">
+    <div class="footer-meta" id="footerMeta">
+      <div class="footer-item">Ham Kayıt: <span id="footerRaw">—</span></div>
+      <div class="footer-item">Temizlenmiş: <span id="footerClean">—</span></div>
+      <div class="footer-item">Filtrelenen: <span id="footerFiltered">—</span></div>
+      <div class="footer-item">Birim: <span>Adet (Oyun Kopyası)</span></div>
+    </div>
+    <div class="footer-brand">BI Dashboard · Kaggle Video Game Sales · Powered by Chart.js</div>
+      </footer>
+    </div> <!-- end of main-area -->
+  </div> <!-- end of app-layout -->
+
+  <script src="app.js"></script>
+</body>
+</html>
