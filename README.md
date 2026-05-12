@@ -14,7 +14,7 @@ Bu proje, Kaggle'dan alınan **"Video Game Sales"** veri seti üzerinde kapsaml�
 
 ### 1. Performans Özeti ve Satış Trendleri
 KPI kartları, bölgesel satış trendleri ve dinamik filtreleme alanı.
-![Performans Özeti](performance.png)
+![Performans Özeti](performanceBI.png)
 
 ### 2. Tür ve Platform Karşılaştırması
 Satış dağılımlarının tür ve platform bazlı analitik görünümleri.
@@ -26,7 +26,7 @@ Bölgesel pazar payları ve satış yoğunluğu ısı haritası.
 
 ### 4. Rekabet ve Marka Analizi
 Yayıncı performansları ve sektörel marka dağılımları.
-![Yayıncı Analizi](marka.jpg)
+![Yayıncı Analizi](marka.png)
 
 ## 🗂️ Veri Seti
 
